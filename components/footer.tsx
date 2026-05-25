@@ -1,11 +1,7 @@
-"use client";
-const Footer = () => {
-    return (
-      <footer className="footer">
-        <p>© Copyright TARUMART 2025-2026</p>
-      </footer>
-    );
-  };
-  
-  export default Footer;
-  
+export default function Footer() {
+  return (
+    <footer className="menu-footer">
+      © Copyright Sedap Malam 2026
+    </footer>
+  );
+}
