@@ -6,8 +6,8 @@ export async function POST(request) {
     try {
         await dbConnect();
 
-        const { name, password, noTelp } = await request.json();
-        const newMember = new membership({ name, password, noTelp, poin: "0" });
+        const { email, password, noTelp } = await request.json();
+        const newMember = new membership({ email, password, noTelp, poin: "0" });
         await newMember.save();
         return NextResponse.json({ success: true, message: "Member created successfully" });
     } catch (error) {
