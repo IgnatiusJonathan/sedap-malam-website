@@ -1,55 +1,32 @@
 'use client';
 
-import React, { useState, FormEvent } from 'react';
+import axios from "axios";
+import React, { useState} from 'react';
 import { useRouter } from 'next/navigation';
-import { verifyWorkerLogin } from '../worker_management/actions';
 
 function Login() {
     const router = useRouter();
-    const [employeeID, setEmployeeID] = useState<string>('');
+    const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [loginMsg, setLoginMsg] = useState<string>('');
 
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = async(e: { preventDefault: () => void; }) => {
         e.preventDefault();
 
-        if (!employeeID || !password) {
-            setLoginMsg("Please enter both Employee ID and Password.");
-            return;
-        }
-
-        const employeeIdNum = parseInt(employeeID, 10);
-        if (isNaN(employeeIdNum)) {
-            setLoginMsg("Employee ID must be a valid number.");
-            return;
-        }
-
-        setLoginMsg(`Verifying credentials...`);
-
         try {
-            const result = await verifyWorkerLogin(employeeIdNum, password);
-
-            if (result.success && result.worker) {
-                setLoginMsg("Login successful! Redirecting...");
-                const sessionData = {
-                    id: result.worker.id,
-                    name: result.worker.nama,
-                    loginTime: new Date().toISOString(),
-                    status: 'Active'
-                };
-
-                localStorage.setItem('currentSession', JSON.stringify(sessionData));
-                localStorage.setItem('nama', result.worker.nama);
-                window.dispatchEvent(new Event('session-update'));
-
-                setTimeout(() => {
-                    router.push('/dashboard');
-                }, 500);
+            const response = await axios.post('/api/login', { email, password });
+            if (response.status === 200) {
+                setEmail('');
+                setPassword('');
+                router.push('/dashboard');
             } else {
-                setLoginMsg("Invalid ID or Password.");
+                setEmail('');
+                setPassword('');
+                alert('Login failed. Please check your credentials and try again.');
             }
         } catch (error) {
-            setLoginMsg("An error occurred. Please try again.");
+            setEmail('');
+            setPassword('');
+            alert('An error occurred during login. Please try again later.');
         }
     };
 
@@ -73,8 +50,8 @@ function Login() {
                                 id="employeeID"
                                 name="employeeID"
                                 className="w-full bg-white border border-gray-300 rounded p-2 text-sm text-gray-900 outline-none focus:border-[var(--maroon)]"
-                                value={employeeID}
-                                onChange={(e) => setEmployeeID(e.target.value)}
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </div>
 
@@ -97,12 +74,6 @@ function Login() {
                             Login
                         </button>
                     </form>
-
-                    {loginMsg && (
-                        <p className={`mt-4 text-center text-sm font-medium animate-pulse ${loginMsg.includes('successful') ? 'text-green-600' : 'text-red-600'}`}>
-                            {loginMsg}
-                        </p>
-                    )}
                 </div>
             </main>
         </div>
