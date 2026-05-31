@@ -4,143 +4,241 @@ import { useState } from "react"
 import "./menu.css"
 
 const makanan = [
-{
-nama:"Indomie Goreng",
-harga:"Rp 15.000",
-poin:"15 Poin",
-image:"/images/indomie_goreng.jpg"
-},
-{
-nama:"Indomie Kuah",
-harga:"Rp 14.000",
-poin:"14 Poin",
-image:"/images/indomie_kuah.jpg"
-}
+  {
+    nama: "Indomie Goreng",
+    harga: "Rp 15.000",
+    poin: "15 Poin",
+    image: "/images/indomie_goreng.jpg"
+  },
+  {
+    nama: "Indomie Kuah",
+    harga: "Rp 14.000",
+    poin: "14 Poin",
+    image: "/images/indomie_kuah.jpg"
+  }
 ]
 
 const minuman = [
-{
-nama:"Es Teh",
-harga:"Rp 8.000",
-poin:"8 Poin",
-image:"/images/es_teh.jpg"
-},
-{
-nama:"Teh Botol Sosro",
-harga:"Rp 10.000",
-poin:"10 Poin",
-image:"/images/teh_botol_sosro.jpg"
-},
-{
-nama:"S-Tee",
-harga:"Rp 9.000",
-poin:"9 Poin",
-image:"/images/s-tee.jpg"
-}
+  {
+    nama: "Es Teh",
+    harga: "Rp 8.000",
+    poin: "8 Poin",
+    image: "/images/es_teh.jpg"
+  },
+  {
+    nama: "Teh Botol Sosro",
+    harga: "Rp 10.000",
+    poin: "10 Poin",
+    image: "/images/teh_botol_sosro.jpg"
+  },
+  {
+    nama: "S-Tee",
+    harga: "Rp 9.000",
+    poin: "9 Poin",
+    image: "/images/s-tee.jpg"
+  }
 ]
 
-export default function MenuPage(){
+export default function MenuPage() {
 
-const [cart,setCart]=useState(3)
+  const [cart, setCart] = useState<any[]>([])
+  const [isCartOpen, setIsCartOpen] = useState(false)
 
-const renderSection=(title:string,data:any[])=>(
-<section className="menu-section">
+  const addToCart = (item: any) => {
+    setCart(prev => [...prev, item])
+  }
 
-<div className="category-tab">
-{title}
-</div>
+  const removeFromCart = (indexToRemove: number) => {
+    setCart(prev => prev.filter((_, idx) => idx !== indexToRemove))
+  }
 
-<div className="menu-box">
+  const renderSection = (title: string, data: any[]) => (
+    <section className="menu-section">
 
-{data.map((item,index)=>(
+      <div className="category-tab">
+        {title}
+      </div>
 
-<div
-className="menu-row"
-key={index}
->
+      <div className="menu-box">
 
-<img
-src={item.image}
-alt={item.nama}
-className="menu-image"
-/>
+        {data.map((item, index) => (
 
-<div className="menu-name">
-{item.nama}
-</div>
+          <div
+            className="menu-row"
+            key={index}
+          >
 
-<div className="menu-price">
+            <img
+              src={item.image}
+              alt={item.nama}
+              className="menu-image"
+            />
 
-<span>Harga</span>
+            <div className="menu-name">
+              {item.nama}
+            </div>
 
-<strong>
-{item.harga}
-</strong>
+            <div className="menu-price">
+              <span>Harga</span>
 
-</div>
+              <strong>
+                {item.harga}
+              </strong>
+            </div>
 
-<div className="menu-point">
+            <div className="menu-point">
 
-<span>Poin Didapat</span>
+              <span>Poin Didapat</span>
 
-<div className="point-badge">
-⭐ {item.poin}
-</div>
+              <div className="point-badge">
+                ⭐ {item.poin}
+              </div>
 
-</div>
+            </div>
 
-<button
-className="plus-btn"
-onClick={()=>setCart(cart+1)}
->
+            <button
+              type="button"
+              className="plus-btn"
+              onClick={() => addToCart(item)}
+              aria-label={`Tambah ${item.nama} ke keranjang`}
+            >
+              <img
+                src="/images/plus.png"
+                alt="add"
+              />
+            </button>
 
-<img
-src="/images/plus.png"
-alt="add"
-/>
+          </div>
 
-</button>
+        ))}
 
-</div>
+      </div>
 
-))}
+    </section>
+  )
 
-</div>
+  return (
 
-</section>
-)
+    <main className="menu-page">
 
-return(
+      <header className="menu-header">
 
-<main className="menu-page">
+        <h1>MENU</h1>
 
-<header className="menu-header">
+        <button
+          type="button"
+          className="cart-btn"
+          onClick={() => setIsCartOpen(true)}
+          aria-label="Buka keranjang"
+        >
 
-<h1>MENU</h1>
+          <img
+            src="/images/cart.png"
+            alt="cart"
+          />
 
-<button className="cart-btn">
+          <div className="cart-count">
+            {cart.length}
+          </div>
 
-<img
-src="/images/cart.png"
-alt="cart"
-/>
+        </button>
 
-<div className="cart-count">
+      </header>
 
-{cart}
+      {renderSection("Makanan", makanan)}
 
-</div>
+      {renderSection("Minuman", minuman)}
 
-</button>
+      {isCartOpen && (
 
-</header>
+        <>
 
-{renderSection("Makanan",makanan)}
+          <div
+            className="cart-overlay"
+            onClick={() => setIsCartOpen(false)}
+          />
 
-{renderSection("Minuman",minuman)}
+          <div className="cart-sidebar">
 
-</main>
+            <div className="cart-sidebar-header">
 
-)
+              <h2>Keranjang</h2>
 
+              <button
+                type="button"
+                className="cart-close"
+                onClick={() => setIsCartOpen(false)}
+                aria-label="Tutup keranjang"
+              >
+                ×
+              </button>
+
+            </div>
+
+            <div className="cart-list">
+
+              {cart.length === 0 ? (
+
+                <p>Belum ada pesanan.</p>
+
+              ) : (
+
+                cart.map((item, index) => (
+
+                  <div
+                    key={`${item.nama}-${index}`}
+                    className="cart-product"
+                  >
+
+                    <div>
+                      <span className="cart-product-name">
+                        {item.nama}
+                      </span>
+
+                      <span className="cart-product-price">
+                        {item.harga}
+                      </span>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="cart-remove-btn"
+                      onClick={() => removeFromCart(index)}
+                      aria-label={`Hapus ${item.nama} dari keranjang`}
+                    >
+                      <img
+                        src="/images/minus.png"
+                        alt="hapus"
+                      />
+                    </button>
+
+                  </div>
+
+                ))
+
+              )}
+
+            </div>
+
+            <div className="cart-sidebar-footer">
+
+              <div className="cart-total">
+                Jumlah Item : {cart.length}
+              </div>
+
+              <button type="button" className="checkout-btn" aria-label="Checkout pesanan">
+                Checkout
+              </button>
+
+            </div>
+
+          </div>
+
+        </>
+
+      )}
+
+    </main>
+
+  )
 }
