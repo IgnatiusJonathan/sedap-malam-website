@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import "./menu.css"
+import { useRouter } from "next/navigation"
 
 const makanan = [
   {
@@ -43,6 +44,32 @@ export default function MenuPage() {
 
   const [cart, setCart] = useState<any[]>([])
   const [isCartOpen, setIsCartOpen] = useState(false)
+  const router = useRouter()
+
+  const handleCheckout = () => {
+    if (cart.length === 0) return;
+
+    const groupedItems: any[] = [];
+    cart.forEach(item => {
+      const ada = groupedItems.find(i => i.nama === item.nama);
+      if (ada) {
+        ada.quantity += 1;
+      }
+      else {
+        const numberHarga = parseInt(item.harga.replace(/[^0-9]/g, ''), 10);
+        groupedItems.push({
+          id: item.nama,
+          nama: item.nama,
+          harga: numberHarga,
+          quantity: 1,
+          image: item.image,
+        });
+      }
+    });
+
+    localStorage.setItem('cartData', JSON.stringify(groupedItems));
+    router.push('/checkout');
+  }
 
   const addToCart = (item: any) => {
     setCart(prev => [...prev, item])
@@ -226,7 +253,7 @@ export default function MenuPage() {
                 Jumlah Item : {cart.length}
               </div>
 
-              <button type="button" className="checkout-btn" aria-label="Checkout pesanan">
+              <button type="button" className="checkout-btn" aria-label="Checkout pesanan" onClick={handleCheckout}>
                 Checkout
               </button>
 
