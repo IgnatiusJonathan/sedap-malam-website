@@ -23,4 +23,4 @@ const PesananSchema = new mongoose.Schema({
   }
 });
 
-export default mongoose.models.Item || mongoose.model('Pesanan', PesananSchema);
+export default mongoose.models.Pesanan || mongoose.model('Pesanan', PesananSchema);

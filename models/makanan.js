@@ -31,4 +31,4 @@ const MakananSchema = new mongoose.Schema({
   },
 });
 
-export default mongoose.models.Item || mongoose.model('Makanan', MakananSchema);
+export default mongoose.models.Makanan  || mongoose.model('Makanan', MakananSchema);

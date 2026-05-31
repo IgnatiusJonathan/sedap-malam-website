@@ -13,4 +13,4 @@ const MemberSchema = new mongoose.Schema({
   poin: Number,
 });
 
-export default mongoose.models.Item || mongoose.model('Member', MemberSchema);
+export default mongoose.models.Member || mongoose.model('Member', MemberSchema);
