@@ -1,27 +1,36 @@
+import dbConnect from "@/lib/mongodb";
+import makanan from "@/models/makanan";
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
 
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
-  const data = await prisma.product.findMany({
-    where: {
-      stok: {
-        gt: 0
-      }
-    }
-  });
+  await dbConnect();
+
+  const data = await makanan.find();
+
   return NextResponse.json(data);
 }
 
 export async function POST(req: Request) {
-  const body = await req.json();
-
-  if (body.stok <= 0) {
-    return new Response("Stok harus lebih dari 0", { status: 400 });
+  try {
+      await dbConnect();
+  
+      const { image, name, description, cash, point, stock, type} = await req.json();
+      if (stock < 0) {
+        return NextResponse.json(
+          { success: false, message: "Stock tidak bisa negatif (How)" },
+          { status: 400 }
+        );
+        }
+      const newMakanan = new makanan({ image, name, description, cash, point, stock, type});
+      await newMakanan.save();
+      return NextResponse.json({
+        success: true,
+        data: newMakanan
+      });
+  } catch (error) {
+      console.error("Error creating item:", error);
+      return NextResponse.json({ success: false, message: "Failed to create item" }, { status: 500 });
   }
-  const newItem = await prisma.product.create({
-    data: body,
-  });
-  return NextResponse.json(newItem);
 }

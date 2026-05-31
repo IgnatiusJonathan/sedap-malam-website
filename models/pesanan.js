@@ -10,7 +10,7 @@ const PesananSchema = new mongoose.Schema({
     required: true,
   },
   total: {
-    type: Int16Array,
+    type: Number,
     required: true,
   },
   gambar: {

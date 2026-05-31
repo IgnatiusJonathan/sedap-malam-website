@@ -1,34 +1,54 @@
-import prisma from "@/lib/prisma";
+import dbConnect from "@/lib/mongodb";
+import makanan from "@/models/makanan";
+import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 
-export async function GET(req: Request, { params }: any) {
-  const product = await prisma.product.findUnique({
-    where: { id: Number(params.id) }
-  });
-  return Response.json(product);
+export async function GET(request: Request, { params }: any) {
+  await dbConnect();
+
+  const product = await makanan.findById(params.id);
+  if (!product) {
+    return NextResponse.json(
+      { message: "Product not found" },
+      { status: 404 }
+    );
+  }
+  return NextResponse.json(product);
 }
 
-export async function PUT(req: Request, { params }: any) {
-  const body = await req.json();
+export async function PATCH(req: Request, { params }: any) {
+  await dbConnect();
 
-  if (body.stok !== undefined && body.stok <= 0) {
-    const deleted = await prisma.product.delete({
-      where: { id: Number(params.id) }
-    });
-    return Response.json({ message: "Value must be more than 0", ...deleted });
+  const { stock } = await req.json();
+
+  if (stock !== undefined && stock < 0) {
+    return Response.json(
+      { message: "Stock tidak boleh negatif" },
+      { status: 400 }
+    );
   }
 
-  const updated = await prisma.product.update({
-    where: { id: Number(params.id) },
-    data: body,
-  });
+  const updated = await makanan.findByIdAndUpdate(
+    params.id,
+    {
+      $set: { stock },
+    },
+    { new: true }
+  );
+
+  if (!updated) {
+    return Response.json(
+      { message: "Makanan tidak ditemukan" },
+      { status: 404 }
+    );
+  }
 
   return Response.json(updated);
 }
 
 export async function DELETE(req: Request, { params }: any) {
-  const deleted = await prisma.product.delete({
-    where: { id: Number(params.id) }
-  });
+  await dbConnect();
+  await makanan.deleteOne({ id: Number(params.id) });
 
-  return Response.json(deleted);
+  return Response.json("Berhasil di delete");
 }

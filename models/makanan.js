@@ -9,16 +9,20 @@ const MakananSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  description: {
+    type: String,
+    required: true,
+  },
   cash: {
-    type: Int16Array,
+    type: Number,
     required: true,
   },
   point: {
-    type: Int16Array,
+    type: Number,
     required: true,
   },
   stock: {
-    type: Int16Array,
+    type: Number,
     required: true,
   },
   type: {

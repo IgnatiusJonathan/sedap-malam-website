@@ -9,8 +9,8 @@ const MemberSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  noTelp: Int16Array,
-  poin: String,
+  noTelp: Number,
+  poin: Number,
 });
 
 export default mongoose.models.Item || mongoose.model('Member', MemberSchema);
