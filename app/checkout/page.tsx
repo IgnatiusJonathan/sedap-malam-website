@@ -1,32 +1,24 @@
 "use client";
 
-import { useState } from "react"
-
-
-const makananSampel = [
-    {
-        id: 1,
-        nama: "Indomie Goreng",
-        harga: 7000,
-        quantity: 2,
-        image: "/images/indomie_goreng.jpg"
-  }
-]
-
-const minumanSampel = [
-    {
-        id: 2,
-        nama: "Teh Botol Sosro",
-        harga: 10000,
-        quantity: 1,
-        image: "/images/teh_botol_sosro.jpg"
-    }
-]
+import { useState, useEffect } from "react"
 
 export default function CheckoutPage() {
-    const [cartItems, setCartItems] = useState([...makananSampel, ...minumanSampel])
+    const [cartItems, setCartItems] = useState<any[]>([])
 
-    const updateQuantity = (id: number, delta: number) => {
+    useEffect(() => {
+        const savedData = localStorage.getItem('cartData')
+        if (savedData) {
+            try {
+                setCartItems(JSON.parse(savedData))
+
+            }
+            catch(e){
+                console.error("Error parsing data keranjang", e)
+            }
+        }
+    }, [])
+
+    const updateQuantity = (id: string | number, delta: number) => {
         setCartItems(prev => prev.map(item => {
             if (item.id === id) {
                 const newQty = Math.max(1, item.quantity + delta)
